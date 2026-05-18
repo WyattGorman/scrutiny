@@ -1,0 +1,11 @@
+2026/05/17 15:53:22 maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined
+time="2026-05-17T15:53:22Z" level=info msg="No configuration file found at /opt/scrutiny/config/scrutiny.yaml. Using Defaults." type=web
+
+ ___   ___  ____  __  __  ____  ____  _  _  _  _
+/ __) / __)(  _ \(  )(  )(_  _)(_  _)( \( )( \/ )
+\__ \( (__  )   / )(__)(   )(   _)(_  )  (  \  /
+(___/ \___)(_)\_)(______) (__) (____)(_)\_) (__)
+github.com/AnalogJ/scrutiny                            dev-1.55.1
+
+Start the scrutiny server
+time="2026-05-17T15:53:22Z" level=fatal msg="ERROR: ConfigValidationError: \"Database parent directory does not exist. Please check path (/opt/scrutiny/config)\"" type=web
