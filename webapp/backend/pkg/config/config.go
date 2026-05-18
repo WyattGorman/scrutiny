@@ -76,6 +76,9 @@ func (c *configuration) Init() error {
 	// When empty (default), the endpoint is open (or protected by web.auth if enabled).
 	c.SetDefault("web.metrics.token", "")
 
+	// Dashboard settings
+	c.SetDefault("user.dashboard_display", "name")
+
 	// Uptime Kuma push monitor
 	c.SetDefault("web.uptime_kuma.insecure_skip_verify", false)
 

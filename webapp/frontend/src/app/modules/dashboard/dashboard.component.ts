@@ -160,7 +160,7 @@ export class DashboardComponent implements OnInit, OnDestroy
     }
 
     deviceDashboardTitle(deviceSummary: DeviceSummaryModel): string {
-        return DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device);
+        return DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device, this.config?.dashboard_display);
     }
 
     private _deviceDataTemperatureSeries(): any[] {
@@ -177,7 +177,7 @@ export class DashboardComponent implements OnInit, OnDestroy
                 continue
             }
 
-            const deviceName = DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device)
+            const deviceName = DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device, this.config?.dashboard_display)
 
             const deviceSeriesMetadata = {
                 name: deviceName,

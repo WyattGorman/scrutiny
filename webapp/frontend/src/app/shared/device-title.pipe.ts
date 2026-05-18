@@ -45,14 +45,14 @@ export class DeviceTitlePipe implements PipeTransform {
         return titleParts.join(' - ')
     }
 
-    static deviceDashboardTitle(device: DeviceModel): string {
+    static deviceDashboardTitle(device: DeviceModel, titleType: string = 'name'): string {
         const customLabel = device.label?.trim();
         if (!customLabel) {
-            return DeviceTitlePipe.deviceTitleForType(device, 'name');
+            return DeviceTitlePipe.deviceTitleForType(device, titleType) || DeviceTitlePipe.deviceTitleForType(device, 'name');
         }
 
-        const nameTitle = DeviceTitlePipe.buildNameTitle(device);
-        return nameTitle ? `${customLabel} - ${nameTitle}` : customLabel;
+        const fallbackTitle = DeviceTitlePipe.deviceTitleForType(device, titleType) || DeviceTitlePipe.deviceTitleForType(device, 'name');
+        return fallbackTitle ? `${customLabel} - ${fallbackTitle}` : customLabel;
     }
 
     static deviceTitleWithFallback(device: DeviceModel, titleType: string): string {

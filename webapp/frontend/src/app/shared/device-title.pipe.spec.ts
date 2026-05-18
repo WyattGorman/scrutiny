@@ -168,5 +168,45 @@ describe('DeviceTitlePipe', () => {
             } as DeviceModel);
             expect(formatted).toEqual('/dev/sdb - nvme - WD');
         });
+
+        it('uses the provided titleType when no custom label is set', () => {
+            const formatted = DeviceTitlePipe.deviceDashboardTitle({
+                device_name: 'sdb',
+                device_type: 'nvme',
+                model_name: 'WD',
+                device_serial_id: 'ata-WDC_WD140EDFZ-11AXXXXX_9RXXXXXX'
+            } as DeviceModel, 'serial_id');
+            expect(formatted).toEqual('/by-id/ata-WDC_WD140EDFZ-11AXXXXX_9RXXXXXX');
+        });
+
+        it('uses the provided titleType alongside the custom label', () => {
+            const formatted = DeviceTitlePipe.deviceDashboardTitle({
+                label: 'Backup Drive 2',
+                device_name: 'sdb',
+                device_type: 'nvme',
+                model_name: 'WD',
+                device_serial_id: 'ata-WDC_WD140EDFZ-11AXXXXX_9RXXXXXX'
+            } as DeviceModel, 'serial_id');
+            expect(formatted).toEqual('Backup Drive 2 - /by-id/ata-WDC_WD140EDFZ-11AXXXXX_9RXXXXXX');
+        });
+
+        it('falls back to normal device name if titleType is not found but there is no label', () => {
+            const formatted = DeviceTitlePipe.deviceDashboardTitle({
+                device_name: 'sdb',
+                device_type: 'nvme',
+                model_name: 'WD'
+            } as DeviceModel, 'serial_id');
+            expect(formatted).toEqual('/dev/sdb - nvme - WD');
+        });
+
+        it('falls back to normal device name if titleType is not found and there is a label', () => {
+            const formatted = DeviceTitlePipe.deviceDashboardTitle({
+                label: 'Backup Drive 3',
+                device_name: 'sdb',
+                device_type: 'nvme',
+                model_name: 'WD'
+            } as DeviceModel, 'serial_id');
+            expect(formatted).toEqual('Backup Drive 3 - /dev/sdb - nvme - WD');
+        });
     });
 });

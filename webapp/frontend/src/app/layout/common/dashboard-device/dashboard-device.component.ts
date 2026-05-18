@@ -75,7 +75,7 @@ export class DashboardDeviceComponent implements OnInit {
     }
 
     deviceDashboardTitle(): string {
-        return DeviceTitlePipe.deviceDashboardTitle(this.deviceSummary.device);
+        return DeviceTitlePipe.deviceDashboardTitle(this.deviceSummary.device, this.config?.dashboard_display);
     }
 
     openArchiveDialog(): void {
