@@ -23,6 +23,9 @@ import {apexShortDateTime} from 'app/shared/time-format.utils';
 import {MDADMService} from 'app/modules/mdadm/mdadm.service';
 import {MDADMArrayModel} from 'app/core/models/mdadm-array-model';
 import { FilesystemCapacityModel, FilesystemHostStatusModel } from 'app/core/models/filesystem-summary-model';
+import {ZFSPoolsService} from 'app/modules/zfs-pools/zfs-pools.service';
+import {ZFSPoolModel, ZFSVdevModel} from 'app/core/models/zfs-pool-model';
+import {matchVdevToDevice} from 'app/shared/zfs-device-matcher.utils';
 
 @Component({
     selector: 'example',
@@ -43,6 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy
     showArchived: boolean = false;
     visibleDrives: { [wwn: string]: boolean } = {};
     mdadmArrays: MDADMArrayModel[] = [];
+    zfsPoolsData: ZFSPoolModel[] = [];
     isTriggering: boolean = false;
     countdown: number = 0;
 
@@ -62,6 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy
     constructor(
         private readonly _dashboardService: DashboardService,
         private readonly _mdadmService: MDADMService,
+        private readonly _zfsPoolsService: ZFSPoolsService,
         private readonly _configService: ScrutinyConfigService,
         private readonly _changeDetectorRef: ChangeDetectorRef,
         public dialog: MatDialog,
@@ -136,6 +141,16 @@ export class DashboardComponent implements OnInit, OnDestroy
                 this.filesystemSummaryData = data;
                 this._changeDetectorRef.markForCheck();
             });
+
+        // Get ZFS pools summary data
+        this._zfsPoolsService.getSummaryData()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((data) => {
+                if (data) {
+                    this.zfsPoolsData = Object.values(data);
+                }
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     /**
@@ -160,7 +175,7 @@ export class DashboardComponent implements OnInit, OnDestroy
     }
 
     deviceDashboardTitle(deviceSummary: DeviceSummaryModel): string {
-        return DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device);
+        return DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device, this.config.dashboard_display);
     }
 
     private _deviceDataTemperatureSeries(): any[] {
@@ -177,7 +192,7 @@ export class DashboardComponent implements OnInit, OnDestroy
                 continue
             }
 
-            const deviceName = DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device)
+            const deviceName = DeviceTitlePipe.deviceDashboardTitle(deviceSummary.device, this.config.dashboard_display)
 
             const deviceSeriesMetadata = {
                 name: deviceName,
@@ -521,6 +536,33 @@ export class DashboardComponent implements OnInit, OnDestroy
             return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900';
         }
         return 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800';
+    }
+
+    getPoolForDevice(deviceSummary: DeviceSummaryModel): ZFSPoolModel | null {
+        if (!this.zfsPoolsData || this.zfsPoolsData.length === 0 || !deviceSummary || !deviceSummary.device) {
+            return null;
+        }
+
+        for (const pool of this.zfsPoolsData) {
+            if (this._isDeviceInVdevTree(deviceSummary.device, pool.vdevs)) {
+                return pool;
+            }
+        }
+        return null;
+    }
+
+    private _isDeviceInVdevTree(device: any, vdevs: ZFSVdevModel[] | undefined): boolean {
+        if (!vdevs) return false;
+
+        for (const vdev of vdevs) {
+            if (matchVdevToDevice(vdev, device)) {
+                return true;
+            }
+            if (vdev.children && this._isDeviceInVdevTree(device, vdev.children)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
