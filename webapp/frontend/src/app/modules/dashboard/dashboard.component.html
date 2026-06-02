@@ -136,7 +136,8 @@
                 @if (showArchived ? $any(deviceSummary).device.archived : !$any(deviceSummary).device.archived) {
                   <app-dashboard-device
                     class="flex gt-sm:w-1/2 min-w-80 p-4"
-                    [deviceSummary]="deviceSummary"
+                    [deviceSummary]="$any(deviceSummary)"
+                    [zfsPool]="getPoolForDevice($any(deviceSummary))"
                     (deviceArchived)="onDeviceArchived($event)"
                     (deviceUnarchived)="onDeviceUnarchived($event)"
                     (deviceDeleted)="onDeviceDeleted($event)">

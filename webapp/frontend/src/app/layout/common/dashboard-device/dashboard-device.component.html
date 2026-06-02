@@ -102,6 +102,15 @@
     </div>
 
     <!-- Actions -->
+    @if (zfsPool) {
+      <div class="ml-4 flex items-center bg-gray-100 dark:bg-gray-800 rounded px-3 py-1">
+        <a [routerLink]="'/zfs-pool/' + zfsPool.guid" class="flex items-center text-secondary hover:text-primary transition-colors">
+          <mat-icon class="icon-size-16 mr-1.5" [svgIcon]="'heroicons_outline:server'"></mat-icon>
+          <span class="text-sm font-medium tracking-wide">ZFS: {{ zfsPool.label || zfsPool.name }}</span>
+        </a>
+      </div>
+    }
+
     @if (deviceSummary.device) {
       <div class="ml-auto flex items-center">
         @if (deviceSummary.device.archived) {

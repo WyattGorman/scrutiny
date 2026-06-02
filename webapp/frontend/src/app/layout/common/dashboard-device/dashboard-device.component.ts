@@ -11,6 +11,7 @@ import {DeviceSummaryModel} from 'app/core/models/device-summary-model';
 import {DeviceStatusPipe} from 'app/shared/device-status.pipe';
 import {DashboardDeviceArchiveDialogComponent} from '../dashboard-device-archive-dialog/dashboard-device-archive-dialog.component';
 import {DashboardDeviceArchiveDialogService} from '../dashboard-device-archive-dialog/dashboard-device-archive-dialog.service';
+import {ZFSPoolModel} from 'app/core/models/zfs-pool-model';
 
 @Component({
     selector: 'app-dashboard-device',
@@ -30,6 +31,7 @@ export class DashboardDeviceComponent implements OnInit {
     }
 
     @Input() deviceSummary: DeviceSummaryModel;
+    @Input() zfsPool: ZFSPoolModel | null = null;
     @Output() deviceArchived = new EventEmitter<string>();
     @Output() deviceUnarchived = new EventEmitter<string>();
     @Output() deviceDeleted = new EventEmitter<string>();
@@ -75,7 +77,7 @@ export class DashboardDeviceComponent implements OnInit {
     }
 
     deviceDashboardTitle(): string {
-        return DeviceTitlePipe.deviceDashboardTitle(this.deviceSummary.device);
+        return DeviceTitlePipe.deviceDashboardTitle(this.deviceSummary.device, this.config.dashboard_display);
     }
 
     openArchiveDialog(): void {
